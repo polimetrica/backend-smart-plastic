@@ -38,12 +38,12 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     return {"access_token": token, "token_type": "bearer"}
 
 @app.post("/ordens/", response_model=schemas.OrderResponse)
-def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.get_current_user)):
+def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     db_order = crud.create_order(db=db, order=order)
     ftp_handler.send_order_file(order)
     return db_order
 
 @app.get("/ordens/", response_model=list[schemas.OrderResponse])
-def list_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.get_current_user)):
+def list_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     orders = crud.get_orders(db, skip=skip, limit=limit)
     return orders
